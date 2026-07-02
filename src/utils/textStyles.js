@@ -161,6 +161,37 @@ export const defaultStyles = {
   },
 }
 
+// ─── OneFounder brand style ───────────────────────────────────────────────────
+
+export const OF_STYLE = {
+  styleType:       'MIXED',
+  headlineFont:    'Courier Prime',
+  headlineSize:    52,
+  headlineStyle:   'normal',
+  subtitleFont:    'Courier Prime',
+  subtitleSize:    28,
+  overlayOpacity:  0,
+  overlayType:     'flat',
+  overlayColor:    '#000000',
+  grainAmount:     0,
+  textColor:       '#2a2a2a',
+  textPosition:    'center',
+  subtitlePosition:'bottom-center',
+  letterSpacing:   0.5,
+  lineHeight:      1.6,
+  textTransform:   'none',
+  textShadow:      false,
+  shadowBlur:      0,
+  imgBrightness:   100,
+  imgContrast:     100,
+  imgSaturation:   100,
+  imgBlur:         0,
+  bgType:          'paper',
+  bgColor:         '#f2ece0',
+  bgGradientStart: '#f2ece0',
+  bgGradientEnd:   '#e8e0d0',
+}
+
 // ─── font menu ─────────────────────────────────────────────────────────────────
 // Must match the @font-face families loaded in index.html.
 
@@ -180,6 +211,8 @@ export const FONTS = [
   'Work Sans',
   // Display / Headline
   'Bebas Neue',
+  // Monospace / Typewriter
+  'Courier Prime',
   // System fallbacks
   'Georgia',
   'Arial',

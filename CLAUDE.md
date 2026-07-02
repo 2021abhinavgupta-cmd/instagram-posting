@@ -457,4 +457,12 @@ cd "d:\office work\projects\kshitij posting\carouselcraft"
 npm install
 npm run dev
 ```
+
+---
+
+## Git & Deployment
+- **GitHub remote**: `git@github.com:2021abhinavgupta-cmd/instagram-posting.git` (branch `main`)
+- **Deployed on Vercel** — Vite preset, root dir `./`; all 4 `VITE_*` keys must be set as Vercel env vars
+- **`.env` gitignore**: `.env` / `.env.*` block added manually — never remove it (real API keys inside)
+- **No git history before first deploy** — repo init'd fresh 2026-06-19; single initial commit
 Must `cd carouselcraft` first — running `npm run dev` from the parent folder will fail.

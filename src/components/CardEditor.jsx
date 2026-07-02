@@ -174,8 +174,9 @@ function Collapsible({ label, open, onToggle, children }) {
 
 // ─── CardEditor ───────────────────────────────────────────────────────────────
 
-export default function CardEditor({ cardIndex = 0, totalCards = 1, onUpdate, cardData = INITIAL_CARD }) {
+export default function CardEditor({ cardIndex = 0, totalCards = 1, onUpdate, cardData = INITIAL_CARD, brand = 'kshitij' }) {
   const [styleOpen, setStyleOpen] = useState(false)
+  const isOF = brand === 'onefounder'
 
   /** Emit a partial patch, merging with current cardData. */
   const update = (patch) => onUpdate?.({ ...cardData, ...patch })
@@ -280,23 +281,27 @@ export default function CardEditor({ cardIndex = 0, totalCards = 1, onUpdate, ca
         )}
       </div>
 
-      {/* ── Image picker ────────────────────────────────────────────── */}
-      <div>
-        <SectionLabel>Background Image</SectionLabel>
-        <ImagePicker
-          onSelect={updateImage}
-          currentUrl={imageUrl}
-        />
-      </div>
+      {/* ── Image picker — hidden for OneFounder (paper bg is fixed) ── */}
+      {!isOF && (
+        <div>
+          <SectionLabel>Background Image</SectionLabel>
+          <ImagePicker
+            onSelect={updateImage}
+            currentUrl={imageUrl}
+          />
+        </div>
+      )}
 
-      {/* ── Style — collapsible ──────────────────────────────────────── */}
-      <Collapsible
-        label="Style Settings"
-        open={styleOpen}
-        onToggle={() => setStyleOpen(o => !o)}
-      >
-        <StylePanel style={style} onChange={updateStyle} />
-      </Collapsible>
+      {/* ── Style — hidden for OneFounder (style is brand-fixed) ──── */}
+      {!isOF && (
+        <Collapsible
+          label="Style Settings"
+          open={styleOpen}
+          onToggle={() => setStyleOpen(o => !o)}
+        >
+          <StylePanel style={style} onChange={updateStyle} />
+        </Collapsible>
+      )}
 
     </div>
   )

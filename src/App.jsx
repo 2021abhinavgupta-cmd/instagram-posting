@@ -36,13 +36,14 @@ import StylePanel     from './components/StylePanel'
 import GlobalSettings from './components/GlobalSettings'
 import PresetManager  from './components/PresetManager'
 import ExportPanel    from './components/ExportPanel'
-import { defaultStyles } from './utils/textStyles'
+import { defaultStyles, OF_STYLE } from './utils/textStyles'
 import { useExport }  from './hooks/useExport'
 
 // ─── constants & initial state ────────────────────────────────────────────────
 
 const INITIAL_STYLE = { ...defaultStyles.HEADLINE, styleType: 'HEADLINE' }
 const COVER_STYLE   = { ...INITIAL_STYLE, overlayOpacity: 0 }
+const OF_COVER_STYLE = { ...OF_STYLE }
 
 let _uid = 0
 function uid() { return `card-${++_uid}-${Math.random().toString(36).slice(2, 6)}` }
@@ -52,6 +53,22 @@ function makeCoverCard() {
     id: 'cover',
     isCover: true,
     data: { headline: '', subtitle: '', imageUrl: null, style: COVER_STYLE },
+  }
+}
+
+function makeOFCoverCard() {
+  return {
+    id: 'cover',
+    isCover: true,
+    data: { headline: '', subtitle: '', imageUrl: null, style: OF_COVER_STYLE },
+  }
+}
+
+function makeOFCard() {
+  return {
+    id: uid(),
+    isCover: false,
+    data: { headline: '', subtitle: '', imageUrl: null, style: { ...OF_STYLE } },
   }
 }
 
@@ -214,6 +231,13 @@ export default function App() {
   const [watermark,           setWatermark]           = useState(null)
   const [showSlideIndicator,  setShowSlideIndicator]  = useState(false)
   const [indicatorPosition,   setIndicatorPosition]   = useState('bottom-right')
+  const [activeBrand,         setActiveBrand]         = useState('kshitij')
+
+  // Saved state for each brand so switching preserves work
+  const savedBrandRef = useRef({
+    kshitij:    null,
+    onefounder: null,
+  })
 
   const applyTimerRef  = useRef(null)
   const previewRefsMap = useRef(new Map())
@@ -343,6 +367,45 @@ export default function App() {
     return () => document.removeEventListener('keydown', onKey)
   }, [undo, redo, exportCard])
 
+  // ── brand switching ────────────────────────────────────────────────────────
+
+  const switchBrand = useCallback((brand) => {
+    if (brand === activeBrand) return
+
+    // Save current brand's state
+    savedBrandRef.current[activeBrand] = {
+      cards:       cardsRef.current,
+      activeCardId: activeCardIdRef.current,
+      globalStyle, // captured from closure — latest via useCallback dep
+    }
+
+    // Clear undo history on brand switch
+    clearTimeout(histTimerRef.current)
+    histPendingRef.current = null
+    historyRef.current = { past: [], future: [] }
+
+    // Load target brand's saved state (or fresh defaults)
+    const saved = savedBrandRef.current[brand]
+    if (saved) {
+      setCards(saved.cards)
+      setActiveCardId(saved.activeCardId)
+      setGlobalStyle(saved.globalStyle)
+    } else if (brand === 'onefounder') {
+      const initialOFCards = [makeOFCoverCard(), makeOFCard()]
+      setCards(initialOFCards)
+      setActiveCardId('cover')
+      setGlobalStyle({ ...OF_STYLE })
+    } else {
+      const initialCards = [makeCoverCard(), makeCard()]
+      setCards(initialCards)
+      setActiveCardId('cover')
+      setGlobalStyle(INITIAL_STYLE)
+    }
+
+    setApplyAll(false)
+    setActiveBrand(brand)
+  }, [activeBrand, globalStyle])
+
   // ── card CRUD ──────────────────────────────────────────────────────────────
 
   const handleActiveChange = useCallback((cardId) => {
@@ -361,12 +424,12 @@ export default function App() {
 
   const handleAddCard = useCallback(() => {
     if (cards.length >= 10) return
-    const newCard = makeCard()
+    const newCard = activeBrand === 'onefounder' ? makeOFCard() : makeCard()
     newCard.data.style = { ...globalStyle }
     scheduleHistory()
     setCards(prev => [...prev, newCard])
     setActiveCardId(newCard.id)
-  }, [cards.length, globalStyle, scheduleHistory])
+  }, [cards.length, globalStyle, scheduleHistory, activeBrand])
 
   const handleRemoveCard = useCallback((cardId) => {
     if (cardId === 'cover' || cards.length <= 2) return
@@ -483,6 +546,32 @@ export default function App() {
           <span className={`text-[10px] font-mono ml-1 hidden sm:inline ${cardCountCls}`}>
             {cards.length} card{cards.length !== 1 ? 's' : ''}
           </span>
+
+          {/* Brand switcher */}
+          <div className={`
+            ml-3 flex items-center rounded-lg p-0.5 gap-0.5
+            ${isDark ? 'bg-neutral-900 border border-neutral-800' : 'bg-gray-100 border border-gray-200'}
+          `}>
+            {['kshitij', 'onefounder'].map(brand => (
+              <button
+                key={brand}
+                onClick={() => switchBrand(brand)}
+                className={`
+                  px-3 py-1 rounded-md text-xs font-medium transition-all
+                  ${activeBrand === brand
+                    ? isDark
+                      ? 'bg-neutral-700 text-white shadow-sm'
+                      : 'bg-white text-gray-900 shadow-sm'
+                    : isDark
+                      ? 'text-neutral-500 hover:text-neutral-300'
+                      : 'text-gray-400 hover:text-gray-600'
+                  }
+                `}
+              >
+                {brand === 'kshitij' ? 'Kshitij' : 'OneFounder'}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="flex items-center gap-1.5">
@@ -542,24 +631,36 @@ export default function App() {
         <aside className={`hidden md:flex w-72 shrink-0 border-r flex-col overflow-hidden ${asideCls}`}>
           <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-5">
 
-            <div>
-              <SidebarLabel>Text Style</SidebarLabel>
-              <StylePanel style={globalStyle} onChange={handleGlobalStyleChange} />
-            </div>
+            {activeBrand === 'onefounder' ? (
+              <div className="flex flex-col gap-3">
+                <SidebarLabel>OneFounder Style</SidebarLabel>
+                <p className="text-xs text-neutral-500 leading-relaxed">
+                  Paper texture · Courier Prime · Dark text<br />
+                  Style is fixed for brand consistency.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div>
+                  <SidebarLabel>Text Style</SidebarLabel>
+                  <StylePanel style={globalStyle} onChange={handleGlobalStyleChange} />
+                </div>
 
-            {applyAll && cards.length > 1 && (
-              <ApplyBar
-                onApplyAll={handleApplyToAll}
-                onDismiss={() => { setApplyAll(false); clearTimeout(applyTimerRef.current) }}
-              />
+                {applyAll && cards.length > 1 && (
+                  <ApplyBar
+                    onApplyAll={handleApplyToAll}
+                    onDismiss={() => { setApplyAll(false); clearTimeout(applyTimerRef.current) }}
+                  />
+                )}
+
+                <SidebarDivider />
+
+                <div>
+                  <SidebarLabel>Presets</SidebarLabel>
+                  <PresetManager currentStyle={globalStyle} onLoad={handlePresetLoad} />
+                </div>
+              </>
             )}
-
-            <SidebarDivider />
-
-            <div>
-              <SidebarLabel>Presets</SidebarLabel>
-              <PresetManager currentStyle={globalStyle} onLoad={handlePresetLoad} />
-            </div>
 
             <SidebarDivider />
 
@@ -592,6 +693,7 @@ export default function App() {
             watermark={watermark}
             showSlideIndicator={showSlideIndicator}
             indicatorPosition={indicatorPosition}
+            brand={activeBrand}
           />
         </main>
 

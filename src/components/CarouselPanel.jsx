@@ -214,6 +214,7 @@ export default function CarouselPanel({
   watermark             = null,
   showSlideIndicator    = false,
   indicatorPosition     = 'bottom-right',
+  brand                 = 'kshitij',
 }) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -366,6 +367,7 @@ export default function CarouselPanel({
               totalCards={cards.length}
               cardData={activeCard.data}
               onUpdate={(data) => onCardUpdate?.(activeCard.id, data)}
+              brand={brand}
             />
           </div>
         ) : null}

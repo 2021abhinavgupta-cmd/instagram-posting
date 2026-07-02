@@ -25,7 +25,7 @@
 import { forwardRef, useImperativeHandle, useRef, useState, useEffect, useMemo, useCallback } from 'react'
 import { Stage, Layer, Rect, Image as KonvaImage, Text, Group } from 'react-konva'
 import Konva from 'konva'
-import { getTextPosition, wrapText, generateGrainCanvas } from '../utils/canvasHelpers'
+import { getTextPosition, wrapText, generateGrainCanvas, generatePaperCanvas } from '../utils/canvasHelpers'
 import { defaultStyles } from '../utils/textStyles'
 
 // ─── constants ────────────────────────────────────────────────────────────────
@@ -454,6 +454,14 @@ const CardPreview = forwardRef(function CardPreview(
     return generateGrainCanvas((grainAmount / 100) * 0.5)
   }, [grainAmount])
 
+  // ── paper texture (OneFounder) ────────────────────────────────────────────
+  const paperCanvas = useMemo(() => {
+    if (bgType !== 'paper') return null
+    return generatePaperCanvas()
+  // regenerate when bgType switches to paper; stable otherwise
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bgType])
+
   const isMixed = styleType === 'MIXED'
 
   // ── shadow props ──────────────────────────────────────────────────────────
@@ -582,7 +590,18 @@ const CardPreview = forwardRef(function CardPreview(
         <Rect x={0} y={0} width={size} height={size} fill="#111111" listening={false} />
 
         {/* 2. Background */}
-        {bgType === 'solid' ? (
+        {bgType === 'paper' ? (
+          paperCanvas ? (
+            <KonvaImage
+              image={paperCanvas}
+              x={0} y={0}
+              width={size} height={size}
+              listening={false}
+            />
+          ) : (
+            <Rect x={0} y={0} width={size} height={size} fill="#f2ece0" listening={false} />
+          )
+        ) : bgType === 'solid' ? (
           <Rect x={0} y={0} width={size} height={size} fill={bgColor} listening={false} />
         ) : bgType === 'gradient' ? (
           <Rect

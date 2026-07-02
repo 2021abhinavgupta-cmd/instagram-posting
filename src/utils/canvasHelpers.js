@@ -201,6 +201,34 @@ export function applyOverlay(opacity) {
  * @param {number} intensity  0–1  (opacity of each grain pixel)
  * @returns {HTMLCanvasElement}
  */
+/**
+ * Generates a warm cream paper texture canvas for the OneFounder brand.
+ * Returns a 1024×1024 HTMLCanvasElement with subtle random noise over a cream base.
+ */
+export function generatePaperCanvas() {
+  const S = 1024
+  const canvas = document.createElement('canvas')
+  canvas.width  = S
+  canvas.height = S
+  const ctx = canvas.getContext('2d')
+
+  // Warm cream base
+  ctx.fillStyle = '#f2ece0'
+  ctx.fillRect(0, 0, S, S)
+
+  // Subtle warm noise for paper texture
+  const imageData = ctx.getImageData(0, 0, S, S)
+  const data = imageData.data
+  for (let i = 0; i < data.length; i += 4) {
+    const noise = (Math.random() - 0.5) * 14
+    data[i]     = Math.min(255, Math.max(0, data[i]     + noise))
+    data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + noise * 0.85))
+    data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + noise * 0.6))
+  }
+  ctx.putImageData(imageData, 0, 0)
+  return canvas
+}
+
 export function generateGrainCanvas(intensity = 0.25) {
   const S = 256
   const canvas = document.createElement('canvas')
