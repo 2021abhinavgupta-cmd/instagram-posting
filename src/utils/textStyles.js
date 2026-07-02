@@ -188,10 +188,10 @@ export const BOLD_STYLE = {
   imgContrast:     100,
   imgSaturation:   100,
   imgBlur:         0,
-  bgType:          'solid',
+  bgType:          'gradient',
   bgColor:         '#0d0d0d',
-  bgGradientStart: '#111111',
-  bgGradientEnd:   '#0d0d0d',
+  bgGradientStart: '#1a1a1a',
+  bgGradientEnd:   '#050505',
 }
 
 export const OF_STYLE = {
