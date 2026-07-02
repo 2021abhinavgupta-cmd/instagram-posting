@@ -186,7 +186,7 @@ export const OF_STYLE = {
   imgContrast:     100,
   imgSaturation:   100,
   imgBlur:         0,
-  bgType:          'paper',
+  bgType:          'image',
   bgColor:         '#d5cfc3',
   bgGradientStart: '#d5cfc3',
   bgGradientEnd:   '#ccc5b8',

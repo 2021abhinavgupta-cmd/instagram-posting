@@ -60,7 +60,7 @@ function makeOFCoverCard() {
   return {
     id: 'cover',
     isCover: true,
-    data: { headline: '', subtitle: '', imageUrl: null, style: OF_COVER_STYLE },
+    data: { headline: '', subtitle: '', imageUrl: '/paper-texture.jpeg', style: OF_COVER_STYLE },
   }
 }
 
@@ -68,7 +68,7 @@ function makeOFCard() {
   return {
     id: uid(),
     isCover: false,
-    data: { headline: '', subtitle: '', imageUrl: null, style: { ...OF_STYLE } },
+    data: { headline: '', subtitle: '', imageUrl: '/paper-texture.jpeg', style: { ...OF_STYLE } },
   }
 }
 
