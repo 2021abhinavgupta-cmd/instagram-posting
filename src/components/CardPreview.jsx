@@ -514,7 +514,7 @@ const CardPreview = forwardRef(function CardPreview(
     ? textProps({
         text: rawHeadline, position: textPosition, stageSize: size,
         fontSize: hSize, fontFamily: headlineFont,
-        fontStyle: konvaFontStyle(headlineStyle === 'italic', false),
+        fontStyle: konvaFontStyle(headlineStyle === 'italic' || headlineStyle === 'bold italic', headlineStyle === 'bold' || headlineStyle === 'bold italic'),
         fill: textColor, lineHeight, letterSpacing: scaledLetterSpacing,
         shadowEnabled: textShadow, shadowColor: 'rgba(0,0,0,0.85)',
         shadowBlur: scaledShadowBlur, shadowOffset: scaledShadowOffset,

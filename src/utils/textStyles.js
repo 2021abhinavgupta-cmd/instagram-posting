@@ -164,21 +164,21 @@ export const defaultStyles = {
 // ─── OneFounder brand style ───────────────────────────────────────────────────
 
 export const OF_STYLE = {
-  styleType:       'MIXED',
+  styleType:       'HEADLINE',
   headlineFont:    'Courier Prime',
-  headlineSize:    52,
-  headlineStyle:   'normal',
+  headlineSize:    78,
+  headlineStyle:   'bold',
   subtitleFont:    'Courier Prime',
-  subtitleSize:    28,
+  subtitleSize:    30,
   overlayOpacity:  0,
   overlayType:     'flat',
   overlayColor:    '#000000',
   grainAmount:     0,
-  textColor:       '#2a2a2a',
+  textColor:       '#1a1a1a',
   textPosition:    'center',
   subtitlePosition:'bottom-center',
   letterSpacing:   0.5,
-  lineHeight:      1.6,
+  lineHeight:      1.5,
   textTransform:   'none',
   textShadow:      false,
   shadowBlur:      0,
@@ -187,9 +187,9 @@ export const OF_STYLE = {
   imgSaturation:   100,
   imgBlur:         0,
   bgType:          'paper',
-  bgColor:         '#f2ece0',
-  bgGradientStart: '#f2ece0',
-  bgGradientEnd:   '#e8e0d0',
+  bgColor:         '#d5cfc3',
+  bgGradientStart: '#d5cfc3',
+  bgGradientEnd:   '#ccc5b8',
 }
 
 // ─── font menu ─────────────────────────────────────────────────────────────────

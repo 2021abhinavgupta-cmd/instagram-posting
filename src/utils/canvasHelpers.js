@@ -212,18 +212,18 @@ export function generatePaperCanvas() {
   canvas.height = S
   const ctx = canvas.getContext('2d')
 
-  // Warm cream base
-  ctx.fillStyle = '#f2ece0'
+  // Neutral gray-beige paper base
+  ctx.fillStyle = '#d5cfc3'
   ctx.fillRect(0, 0, S, S)
 
-  // Subtle warm noise for paper texture
+  // Visible grain for paper texture
   const imageData = ctx.getImageData(0, 0, S, S)
   const data = imageData.data
   for (let i = 0; i < data.length; i += 4) {
-    const noise = (Math.random() - 0.5) * 14
+    const noise = (Math.random() - 0.5) * 28
     data[i]     = Math.min(255, Math.max(0, data[i]     + noise))
-    data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + noise * 0.85))
-    data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + noise * 0.6))
+    data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + noise * 0.92))
+    data[i + 2] = Math.min(255, Math.max(0, data[i + 2] + noise * 0.78))
   }
   ctx.putImageData(imageData, 0, 0)
   return canvas
