@@ -631,36 +631,26 @@ export default function App() {
         <aside className={`hidden md:flex w-72 shrink-0 border-r flex-col overflow-hidden ${asideCls}`}>
           <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-5">
 
-            {activeBrand === 'onefounder' ? (
-              <div className="flex flex-col gap-3">
-                <SidebarLabel>OneFounder Style</SidebarLabel>
-                <p className="text-xs text-neutral-500 leading-relaxed">
-                  Paper texture · Courier Prime · Dark text<br />
-                  Style is fixed for brand consistency.
-                </p>
+            <>
+              <div>
+                <SidebarLabel>Text Style</SidebarLabel>
+                <StylePanel style={globalStyle} onChange={handleGlobalStyleChange} />
               </div>
-            ) : (
-              <>
-                <div>
-                  <SidebarLabel>Text Style</SidebarLabel>
-                  <StylePanel style={globalStyle} onChange={handleGlobalStyleChange} />
-                </div>
 
-                {applyAll && cards.length > 1 && (
-                  <ApplyBar
-                    onApplyAll={handleApplyToAll}
-                    onDismiss={() => { setApplyAll(false); clearTimeout(applyTimerRef.current) }}
-                  />
-                )}
+              {applyAll && cards.length > 1 && (
+                <ApplyBar
+                  onApplyAll={handleApplyToAll}
+                  onDismiss={() => { setApplyAll(false); clearTimeout(applyTimerRef.current) }}
+                />
+              )}
 
-                <SidebarDivider />
+              <SidebarDivider />
 
-                <div>
-                  <SidebarLabel>Presets</SidebarLabel>
-                  <PresetManager currentStyle={globalStyle} onLoad={handlePresetLoad} />
-                </div>
-              </>
-            )}
+              <div>
+                <SidebarLabel>Presets</SidebarLabel>
+                <PresetManager currentStyle={globalStyle} onLoad={handlePresetLoad} />
+              </div>
+            </>
 
             <SidebarDivider />
 
