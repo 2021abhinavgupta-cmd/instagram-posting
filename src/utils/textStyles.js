@@ -29,6 +29,7 @@ export const PRESET_FIELDS = [
   'overlayColor',
   'grainAmount',
   'textColor',
+  'accentColor',
   'textPosition',
   'letterSpacing',
   'lineHeight',
@@ -162,6 +163,36 @@ export const defaultStyles = {
 }
 
 // ─── OneFounder brand style ───────────────────────────────────────────────────
+
+export const BOLD_STYLE = {
+  styleType:       'SPLIT',
+  headlineFont:    'Bebas Neue',
+  headlineSize:    92,
+  headlineStyle:   'normal',
+  subtitleFont:    'Bebas Neue',
+  subtitleSize:    92,
+  overlayOpacity:  0,
+  overlayType:     'flat',
+  overlayColor:    '#000000',
+  grainAmount:     0,
+  textColor:       '#ffffff',
+  accentColor:     '#c8f135',
+  textPosition:    'top-left',
+  subtitlePosition:'center-left',
+  letterSpacing:   1,
+  lineHeight:      1.05,
+  textTransform:   'uppercase',
+  textShadow:      false,
+  shadowBlur:      0,
+  imgBrightness:   100,
+  imgContrast:     100,
+  imgSaturation:   100,
+  imgBlur:         0,
+  bgType:          'solid',
+  bgColor:         '#0d0d0d',
+  bgGradientStart: '#111111',
+  bgGradientEnd:   '#0d0d0d',
+}
 
 export const OF_STYLE = {
   styleType:       'HEADLINE',

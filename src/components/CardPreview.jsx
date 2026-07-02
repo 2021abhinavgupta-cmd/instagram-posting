@@ -408,6 +408,7 @@ const CardPreview = forwardRef(function CardPreview(
     bgColor          = '#111111',
     bgGradientStart  = '#1a1a2e',
     bgGradientEnd    = '#0d0d0d',
+    accentColor      = null,
   } = style
 
   const displayScale        = size / EXPORT_SIZE
@@ -527,7 +528,7 @@ const CardPreview = forwardRef(function CardPreview(
     ? textProps({
         text: rawSubtitle, position: subtitlePosition, stageSize: size,
         fontSize: sSize, fontFamily: subtitleFont, fontStyle: 'normal',
-        fill: textColor, lineHeight: lineHeight * 1.05, letterSpacing: scaledLetterSpacing,
+        fill: accentColor ?? textColor, lineHeight: lineHeight * 1.05, letterSpacing: scaledLetterSpacing,
         shadowEnabled: textShadow, shadowColor: 'rgba(0,0,0,0.85)',
         shadowBlur: scaledShadowBlur, shadowOffset: scaledShadowOffset,
       })

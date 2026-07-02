@@ -176,7 +176,8 @@ function Collapsible({ label, open, onToggle, children }) {
 
 export default function CardEditor({ cardIndex = 0, totalCards = 1, onUpdate, cardData = INITIAL_CARD, brand = 'kshitij' }) {
   const [styleOpen, setStyleOpen] = useState(false)
-  const isOF = brand === 'onefounder'
+  const isOF   = brand === 'onefounder'
+  const isBold = brand === 'bold'
 
   /** Emit a partial patch, merging with current cardData. */
   const update = (patch) => onUpdate?.({ ...cardData, ...patch })
@@ -281,8 +282,8 @@ export default function CardEditor({ cardIndex = 0, totalCards = 1, onUpdate, ca
         )}
       </div>
 
-      {/* ── Image picker — hidden for OneFounder (paper bg is fixed) ── */}
-      {!isOF && (
+      {/* ── Image picker — hidden for OF (paper) and Bold (solid black bg) ── */}
+      {!isOF && !isBold && (
         <div>
           <SectionLabel>Background Image</SectionLabel>
           <ImagePicker
@@ -292,7 +293,7 @@ export default function CardEditor({ cardIndex = 0, totalCards = 1, onUpdate, ca
         </div>
       )}
 
-      {/* ── Style — hidden for OneFounder (style is brand-fixed) ──── */}
+      {/* ── Style collapsible ──── */}
       {!isOF && (
         <Collapsible
           label="Style Settings"

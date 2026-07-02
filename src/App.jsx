@@ -36,14 +36,15 @@ import StylePanel     from './components/StylePanel'
 import GlobalSettings from './components/GlobalSettings'
 import PresetManager  from './components/PresetManager'
 import ExportPanel    from './components/ExportPanel'
-import { defaultStyles, OF_STYLE } from './utils/textStyles'
+import { defaultStyles, OF_STYLE, BOLD_STYLE } from './utils/textStyles'
 import { useExport }  from './hooks/useExport'
 
 // ─── constants & initial state ────────────────────────────────────────────────
 
-const INITIAL_STYLE = { ...defaultStyles.HEADLINE, styleType: 'HEADLINE' }
-const COVER_STYLE   = { ...INITIAL_STYLE, overlayOpacity: 0 }
-const OF_COVER_STYLE = { ...OF_STYLE }
+const INITIAL_STYLE   = { ...defaultStyles.HEADLINE, styleType: 'HEADLINE' }
+const COVER_STYLE     = { ...INITIAL_STYLE, overlayOpacity: 0 }
+const OF_COVER_STYLE  = { ...OF_STYLE }
+const BOLD_COVER_STYLE = { ...BOLD_STYLE }
 
 let _uid = 0
 function uid() { return `card-${++_uid}-${Math.random().toString(36).slice(2, 6)}` }
@@ -77,6 +78,22 @@ function makeCard() {
     id: uid(),
     isCover: false,
     data: { headline: '', subtitle: '', imageUrl: null, style: { ...INITIAL_STYLE } },
+  }
+}
+
+function makeBoldCoverCard() {
+  return {
+    id: 'cover',
+    isCover: true,
+    data: { headline: '', subtitle: '', imageUrl: null, style: BOLD_COVER_STYLE },
+  }
+}
+
+function makeBoldCard() {
+  return {
+    id: uid(),
+    isCover: false,
+    data: { headline: '', subtitle: '', imageUrl: null, style: { ...BOLD_STYLE } },
   }
 }
 
@@ -237,6 +254,7 @@ export default function App() {
   const savedBrandRef = useRef({
     kshitij:    null,
     onefounder: null,
+    bold:       null,
   })
 
   const applyTimerRef  = useRef(null)
@@ -395,6 +413,11 @@ export default function App() {
       setCards(initialOFCards)
       setActiveCardId('cover')
       setGlobalStyle({ ...OF_STYLE })
+    } else if (brand === 'bold') {
+      const initialBoldCards = [makeBoldCoverCard(), makeBoldCard()]
+      setCards(initialBoldCards)
+      setActiveCardId('cover')
+      setGlobalStyle({ ...BOLD_STYLE })
     } else {
       const initialCards = [makeCoverCard(), makeCard()]
       setCards(initialCards)
@@ -424,7 +447,7 @@ export default function App() {
 
   const handleAddCard = useCallback(() => {
     if (cards.length >= 10) return
-    const newCard = activeBrand === 'onefounder' ? makeOFCard() : makeCard()
+    const newCard = activeBrand === 'onefounder' ? makeOFCard() : activeBrand === 'bold' ? makeBoldCard() : makeCard()
     newCard.data.style = { ...globalStyle }
     scheduleHistory()
     setCards(prev => [...prev, newCard])
@@ -552,23 +575,25 @@ export default function App() {
             ml-3 flex items-center rounded-lg p-0.5 gap-0.5
             ${isDark ? 'bg-neutral-900 border border-neutral-800' : 'bg-gray-100 border border-gray-200'}
           `}>
-            {['kshitij', 'onefounder'].map(brand => (
+            {['kshitij', 'onefounder', 'bold'].map(brand => (
               <button
                 key={brand}
                 onClick={() => switchBrand(brand)}
                 className={`
                   px-3 py-1 rounded-md text-xs font-medium transition-all
                   ${activeBrand === brand
-                    ? isDark
-                      ? 'bg-neutral-700 text-white shadow-sm'
-                      : 'bg-white text-gray-900 shadow-sm'
+                    ? brand === 'bold'
+                      ? 'bg-[#c8f135] text-black shadow-sm'
+                      : isDark
+                        ? 'bg-neutral-700 text-white shadow-sm'
+                        : 'bg-white text-gray-900 shadow-sm'
                     : isDark
                       ? 'text-neutral-500 hover:text-neutral-300'
                       : 'text-gray-400 hover:text-gray-600'
                   }
                 `}
               >
-                {brand === 'kshitij' ? 'Kshitij' : 'OneFounder'}
+                {brand === 'kshitij' ? 'Kshitij' : brand === 'onefounder' ? 'OneFounder' : 'Bold Dark'}
               </button>
             ))}
           </div>

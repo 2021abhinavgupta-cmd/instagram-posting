@@ -357,7 +357,7 @@ export default function CarouselPanel({
 
       {/* ── Active editor pane ───────────────────────────────────────────── */}
       <div className="flex-1 overflow-y-auto min-h-0">
-        {activeCard?.isCover ? (
+        {activeCard?.isCover && brand !== 'bold' ? (
           <CoverEditor card={activeCard} onCardUpdate={onCardUpdate} />
         ) : activeCard ? (
           <div className="p-4">
