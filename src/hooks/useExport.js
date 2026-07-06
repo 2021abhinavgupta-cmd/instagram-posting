@@ -65,8 +65,11 @@ export function useExport() {
 
     for (let i = 0; i < refs.length; i++) {
       onProgress?.(Math.round((i / refs.length) * 90))
-      // Skip cards with no background image
-      if (!cards?.[i]?.data?.imageUrl) {
+      // Skip only cards whose background type actually requires an image —
+      // solid/gradient/paper cards (e.g. Bold Dark) have imageUrl: null by design.
+      const bgType     = cards?.[i]?.data?.style?.bgType
+      const needsImage = bgType === 'image' || !bgType
+      if (needsImage && !cards?.[i]?.data?.imageUrl) {
         skipped++
         continue
       }
