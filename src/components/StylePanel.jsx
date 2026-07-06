@@ -572,7 +572,7 @@ export default function StylePanel({ style = {}, onChange }) {
         label="Subtitle Size"
         value={style.subtitleSize ?? 32}
         min={24}
-        max={48}
+        max={96}
         step={1}
         unit="px"
         onChange={v => emit('subtitleSize', v)}
