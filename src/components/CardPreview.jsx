@@ -371,10 +371,11 @@ const CardPreview = forwardRef(function CardPreview(
 
   // ── destructure ──────────────────────────────────────────────────────────
   const {
-    headline  = '',
-    subtitle  = '',
-    imageUrl  = null,
-    style     = defaultStyles.HEADLINE,
+    headline   = '',
+    subtitle   = '',
+    salutation = '',
+    imageUrl   = null,
+    style      = defaultStyles.HEADLINE,
   } = cardData
 
   const {
@@ -421,6 +422,7 @@ const CardPreview = forwardRef(function CardPreview(
   // Apply text transform before rendering
   const rawHeadline    = applyTextTransform(headline, textTransform)
   const rawSubtitle    = applyTextTransform(subtitle, textTransform)
+  const rawSalutation  = applyTextTransform(salutation, textTransform)
 
   const hSize = fitFontSize(rawHeadline, _maxW, headlineSize * displayScale, headlineFont)
   const sSize = fitFontSize(rawSubtitle, _maxW, subtitleSize * displayScale, subtitleFont)
@@ -534,6 +536,18 @@ const CardPreview = forwardRef(function CardPreview(
       })
     : null
 
+  // ── salutation — extra line stacked below subtitle, same styling ─────────
+  const showSalutation = rawSalutation && styleType !== 'MIXED'
+  const salutationTP = showSalutation
+    ? textProps({
+        text: rawSalutation, position: subtitlePosition, stageSize: size,
+        fontSize: sSize, fontFamily: subtitleFont, fontStyle: 'normal',
+        fill: accentColor ?? textColor, lineHeight: lineHeight * 1.05, letterSpacing: scaledLetterSpacing,
+        shadowEnabled: textShadow, shadowColor: 'rgba(0,0,0,0.85)',
+        shadowBlur: scaledShadowBlur, shadowOffset: scaledShadowOffset,
+      })
+    : null
+
   // ── draggable text positioning ────────────────────────────────────────────
   // Split x/y from text attrs so Group handles position independently.
   // Drag overrides (textDragX/Y) replace the grid-computed position.
@@ -561,6 +575,21 @@ const CardPreview = forwardRef(function CardPreview(
   const subtitleBlockH = subtitleTextAttrs
     ? Math.max(estimateTextHeight(rawSubtitle, sSize, _maxW, subtitleFont, lineHeight * 1.05), sSize)
     : 0
+
+  // Salutation stacks directly below the rendered subtitle block (same x, gap below).
+  // Falls back to its own grid position when there is no subtitle to stack under.
+  let salutationGX = 0, salutationGY = 0, salutationTextAttrs = null
+  if (salutationTP) {
+    const { x: sax, y: say, ...saAttrs } = salutationTP
+    salutationTextAttrs = saAttrs
+    if (subtitleTextAttrs) {
+      salutationGX = subtitleGX
+      salutationGY = subtitleGY + subtitleBlockH + 8 * displayScale
+    } else {
+      salutationGX = sax
+      salutationGY = say
+    }
+  }
 
   // ── drag handlers ─────────────────────────────────────────────────────────
   const dragBound = useCallback((pos) => ({
@@ -681,6 +710,10 @@ const CardPreview = forwardRef(function CardPreview(
           ) : (
             <Text {...subtitleTextAttrs} x={subtitleGX} y={subtitleGY} opacity={0.85} />
           )
+        )}
+
+        {salutationTextAttrs && (
+          <Text {...salutationTextAttrs} x={salutationGX} y={salutationGY} opacity={0.85} />
         )}
 
         {/* 7. Watermark */}

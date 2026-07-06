@@ -193,7 +193,7 @@ export default function CardEditor({ cardIndex = 0, totalCards = 1, onUpdate, ca
     update({ imageUrl: url, style: newStyle })
   }
 
-  const { style, headline, subtitle, imageUrl } = cardData
+  const { style, headline, subtitle, salutation, imageUrl } = cardData
   const isMixed    = style.styleType === 'MIXED'
   const isSubtitle = style.styleType === 'SUBTITLE'
 
@@ -277,6 +277,20 @@ export default function CardEditor({ cardIndex = 0, totalCards = 1, onUpdate, ca
               maxLines={3}
               rows={3}
               placeholder='A truth most people try to avoid…'
+            />
+          </div>
+        )}
+
+        {/* Salutation — extra line below subtitle, OneFounder + Bold Dark only */}
+        {(isOF || isBold) && (
+          <div>
+            <SectionLabel>Salutation</SectionLabel>
+            <LimitedTextarea
+              value={salutation || ''}
+              onChange={v => update({ salutation: v })}
+              maxLines={1}
+              rows={1}
+              placeholder='e.g. — Kshitij'
             />
           </div>
         )}
