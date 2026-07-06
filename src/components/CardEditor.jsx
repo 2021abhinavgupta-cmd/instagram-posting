@@ -136,6 +136,49 @@ function MixedInput({ value, onChange, headlineFont, subtitleFont }) {
   )
 }
 
+/** Compact slider — mirrors StylePanel's Slider styling. */
+function MiniSlider({ label, value, min, max, step = 1, unit = '', onChange }) {
+  const pct = ((value - min) / (max - min)) * 100
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-neutral-600">
+          {label}
+        </span>
+        <span className="text-xs text-neutral-400 tabular-nums font-mono">
+          {Math.round(value)}{unit}
+        </span>
+      </div>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={e => onChange(Number(e.target.value))}
+        className="
+          w-full h-[3px] rounded-full appearance-none cursor-pointer
+          [&::-webkit-slider-thumb]:appearance-none
+          [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4
+          [&::-webkit-slider-thumb]:rounded-full
+          [&::-webkit-slider-thumb]:bg-white
+          [&::-webkit-slider-thumb]:shadow-md
+          [&::-webkit-slider-thumb]:cursor-pointer
+          [&::-webkit-slider-thumb]:-mt-[6.5px]
+          [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4
+          [&::-moz-range-thumb]:rounded-full
+          [&::-moz-range-thumb]:bg-white
+          [&::-moz-range-thumb]:border-0
+          [&::-moz-range-thumb]:cursor-pointer
+        "
+        style={{
+          background: `linear-gradient(to right, #e5e5e5 0%, #e5e5e5 ${pct}%, #2a2a2a ${pct}%, #2a2a2a 100%)`,
+        }}
+      />
+    </div>
+  )
+}
+
 /** Collapsible section with animated height. */
 function Collapsible({ label, open, onToggle, children }) {
   return (
@@ -283,7 +326,7 @@ export default function CardEditor({ cardIndex = 0, totalCards = 1, onUpdate, ca
 
         {/* Salutation — extra line below subtitle, OneFounder + Bold Dark only */}
         {(isOF || isBold) && (
-          <div>
+          <div className="flex flex-col gap-3">
             <SectionLabel>Salutation</SectionLabel>
             <LimitedTextarea
               value={salutation || ''}
@@ -291,6 +334,14 @@ export default function CardEditor({ cardIndex = 0, totalCards = 1, onUpdate, ca
               maxLines={1}
               rows={1}
               placeholder='e.g. — Kshitij'
+            />
+            <MiniSlider
+              label="Salutation Size"
+              value={style.salutationSize ?? style.subtitleSize ?? 32}
+              min={16}
+              max={96}
+              unit="px"
+              onChange={v => updateStyle({ ...style, salutationSize: v })}
             />
           </div>
         )}

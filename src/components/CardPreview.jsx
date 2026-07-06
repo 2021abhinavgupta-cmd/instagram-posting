@@ -395,6 +395,9 @@ const CardPreview = forwardRef(function CardPreview(
     headlineStyle    = 'italic',
     subtitleFont     = 'Inter',
     subtitleSize     = 32,
+    salutationSize   = null,
+    salutationDragX  = null,
+    salutationDragY  = null,
     textColor        = '#ffffff',
     letterSpacing    = 0,
     lineHeight       = 1.3,
@@ -424,8 +427,9 @@ const CardPreview = forwardRef(function CardPreview(
   const rawSubtitle    = applyTextTransform(subtitle, textTransform)
   const rawSalutation  = applyTextTransform(salutation, textTransform)
 
-  const hSize = fitFontSize(rawHeadline, _maxW, headlineSize * displayScale, headlineFont)
-  const sSize = fitFontSize(rawSubtitle, _maxW, subtitleSize * displayScale, subtitleFont)
+  const hSize  = fitFontSize(rawHeadline, _maxW, headlineSize * displayScale, headlineFont)
+  const sSize  = fitFontSize(rawSubtitle, _maxW, subtitleSize * displayScale, subtitleFont)
+  const salSize = fitFontSize(rawSalutation, _maxW, (salutationSize ?? subtitleSize) * displayScale, subtitleFont)
 
   // ── image loading ─────────────────────────────────────────────────────────
   const bgImage = useKonvaImage(bgType === 'image' || !bgType ? imageUrl : null)
@@ -536,12 +540,12 @@ const CardPreview = forwardRef(function CardPreview(
       })
     : null
 
-  // ── salutation — extra line stacked below subtitle, same styling ─────────
+  // ── salutation — independent size + position, same font/color as subtitle ─
   const showSalutation = rawSalutation && styleType !== 'MIXED'
   const salutationTP = showSalutation
     ? textProps({
         text: rawSalutation, position: subtitlePosition, stageSize: size,
-        fontSize: sSize, fontFamily: subtitleFont, fontStyle: 'normal',
+        fontSize: salSize, fontFamily: subtitleFont, fontStyle: 'normal',
         fill: accentColor ?? textColor, lineHeight: lineHeight * 1.05, letterSpacing: scaledLetterSpacing,
         shadowEnabled: textShadow, shadowColor: 'rgba(0,0,0,0.85)',
         shadowBlur: scaledShadowBlur, shadowOffset: scaledShadowOffset,
@@ -576,19 +580,20 @@ const CardPreview = forwardRef(function CardPreview(
     ? Math.max(estimateTextHeight(rawSubtitle, sSize, _maxW, subtitleFont, lineHeight * 1.05), sSize)
     : 0
 
-  // Salutation stacks directly below the rendered subtitle block (same x, gap below).
-  // Falls back to its own grid position when there is no subtitle to stack under.
+  const salutationBlockH = salutationTP
+    ? Math.max(estimateTextHeight(rawSalutation, salSize, _maxW, subtitleFont, lineHeight * 1.05), salSize)
+    : 0
+
+  // Salutation is independently draggable. Before the user ever drags it,
+  // default to stacking directly below the rendered subtitle block.
   let salutationGX = 0, salutationGY = 0, salutationTextAttrs = null
   if (salutationTP) {
     const { x: sax, y: say, ...saAttrs } = salutationTP
     salutationTextAttrs = saAttrs
-    if (subtitleTextAttrs) {
-      salutationGX = subtitleGX
-      salutationGY = subtitleGY + subtitleBlockH + 8 * displayScale
-    } else {
-      salutationGX = sax
-      salutationGY = say
-    }
+    const defaultX = subtitleTextAttrs ? subtitleGX : sax
+    const defaultY = subtitleTextAttrs ? subtitleGY + subtitleBlockH + 8 * displayScale : say
+    salutationGX = salutationDragX != null ? salutationDragX * displayScale : defaultX
+    salutationGY = salutationDragY != null ? salutationDragY * displayScale : defaultY
   }
 
   // ── drag handlers ─────────────────────────────────────────────────────────
@@ -608,6 +613,13 @@ const CardPreview = forwardRef(function CardPreview(
     onTextDrag?.({
       subtitleDragX: e.target.x() / displayScale,
       subtitleDragY: e.target.y() / displayScale,
+    })
+  }, [onTextDrag, displayScale])
+
+  const handleSalutationDragEnd = useCallback((e) => {
+    onTextDrag?.({
+      salutationDragX: e.target.x() / displayScale,
+      salutationDragY: e.target.y() / displayScale,
     })
   }, [onTextDrag, displayScale])
 
@@ -713,7 +725,18 @@ const CardPreview = forwardRef(function CardPreview(
         )}
 
         {salutationTextAttrs && (
-          <Text {...salutationTextAttrs} x={salutationGX} y={salutationGY} opacity={0.85} />
+          draggableText ? (
+            <DraggableTextGroup
+              x={salutationGX} y={salutationGY}
+              width={_maxW} height={salutationBlockH}
+              onDragEnd={handleSalutationDragEnd}
+              dragBound={dragBound}
+            >
+              <Text {...salutationTextAttrs} x={0} y={0} opacity={0.85} listening={false} />
+            </DraggableTextGroup>
+          ) : (
+            <Text {...salutationTextAttrs} x={salutationGX} y={salutationGY} opacity={0.85} />
+          )
         )}
 
         {/* 7. Watermark */}

@@ -24,6 +24,7 @@ export const PRESET_FIELDS = [
   'headlineStyle',
   'subtitleFont',
   'subtitleSize',
+  'salutationSize',
   'overlayOpacity',
   'overlayType',
   'overlayColor',
